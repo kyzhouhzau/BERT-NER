@@ -37,7 +37,7 @@ result:
 #### 注：I am a beginner of tensorflow, I don't know how to optimize the code better, and because I don't know if there is a multi-class evaluation function in tensorflow, I only call tf.metrics.accuracy for evaluation. All results are attached here. I hope to get your help!
 
 reference:
-          [https://github.com/google-research/bert](https://github.com/google-research/bert)
-          
-          [https://arxiv.org/abs/1810.04805](https://arxiv.org/abs/1810.04805)
++ [https://github.com/google-research/bert](https://github.com/google-research/bert)
+      
++ [https://arxiv.org/abs/1810.04805](https://arxiv.org/abs/1810.04805)
 
