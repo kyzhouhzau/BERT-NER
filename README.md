@@ -6,12 +6,11 @@ Try to implement NER work based on google's BERT code!
 First <code>git clone https://github.com/google-research/bert.git</code>
 Second <code>download file in this project</code>
 
-BERT
-|
-|_______ <strong>bert</strong>
-|_______ BERT_NER.py
-|_______ <strong>checkpoint</strong>
-|_______ <strong>output</strong>
+    BERT
+    |_______ <strong>bert</strong>
+    |_______ BERT_NER.py
+    |_______ <strong>checkpoint</strong>
+    |_______ <strong>output</strong>
 
 
 Third run:
@@ -31,7 +30,7 @@ python BERT_NER.py   \
                   
                   
 result:
-./picture.jpg
+./picture.png
 
 
 #### 注：I am a beginner of tensorflow, I don't know how to optimize the code better, and because I don't know if there is a multi-class evaluation function in tensorflow, I only call tf.metrics.accuracy for evaluation. All results are attached here. I hope to get your help!
