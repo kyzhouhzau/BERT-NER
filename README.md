@@ -3,7 +3,9 @@ Use google BERT to do CoNLL-2003 NER !
 
 
 Try to implement NER work based on google's BERT code!
+
 First <code>git clone https://github.com/google-research/bert.git</code>
+
 Second <code>download file in this project</code>
 
     BERT
