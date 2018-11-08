@@ -33,7 +33,7 @@ Third run:
  ```       
 
 result:
-![](/picturen.png)
+![](/picture1.png)
 
 
 #### 注：For the parameters of the above model, I have not made any modifications. All parameters are based on the BERT default parameters. The better parameters for this problem can be adjusted by yourselves.
