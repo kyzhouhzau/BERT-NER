@@ -17,6 +17,8 @@ from bert import tokenization
 import tensorflow as tf
 from sklearn.metrics import f1_score,precision_score,recall_score
 from tensorflow.python.ops import math_ops
+import tf_metrics
+
 flags = tf.flags
 
 FLAGS = flags.FLAGS
@@ -328,7 +330,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
         output_layer = tf.reshape(output_layer, [-1, hidden_size])
         logits = tf.matmul(output_layer, output_weight, transpose_b=True)
         logits = tf.nn.bias_add(logits, output_bias)
-        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, 10])
+        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, 11])
         log_probs = tf.nn.log_softmax(logits, axis=-1)
 
         # labels = tf.cast(labels,dtype=tf.float32)
@@ -358,8 +360,7 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
         tvars = tf.trainable_variables()
         scaffold_fn = None
         if init_checkpoint:
-            (assignment_map, initialized_variable_names) = modeling.get_assignment_map_from_checkpoint(tvars,
-                                                                                                       init_checkpoint)
+            (assignment_map, initialized_variable_names) = modeling.get_assignment_map_from_checkpoint(tvars,init_checkpoint)
             tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
             if use_tpu:
                 def tpu_scaffold():
@@ -368,8 +369,6 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 scaffold_fn = tpu_scaffold
             else:
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
-
-
         tf.logging.info("**** Trainable Variables ****")
 
         for var in tvars:
@@ -395,11 +394,15 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 # precision = precision_score(label_ids, predictions, average='macro')
                 # recall = recall_score(label_ids, predictions, average='macro')
                 # f_score = f1_score(label_ids, predictions, average='macro')
-                accuracy = tf.metrics.accuracy(label_ids, predictions)
+                # accuracy = tf.metrics.accuracy(label_ids, predictions)
+                precision = tf_metrics.precision(label_ids,predictions,11,[1,2,4,5,6,7,8,9],average="macro")
+                recall = tf_metrics.recall(label_ids,predictions,11,[1,2,4,5,6,7,8,9],average="macro")
+                f = tf_metrics.f1(label_ids,predictions,11,[1,2,4,5,6,7,8,9],average="macro")
                 loss = tf.metrics.mean(per_example_loss)
                 return {
-                    # "eval_precision":precision,
-                    "eval_accuracy": accuracy,
+                    "eval_precision":precision,
+                    "eval_recall":recall,
+                    "eval_f": f,
                     # "F_score":f_score,
                     "eval_loss": loss,
                 }
@@ -468,7 +471,7 @@ def main(_):
         num_warmup_steps = int(num_train_steps * FLAGS.warmup_proportion)
     model_fn = model_fn_builder(
         bert_config=bert_config,
-        num_labels=len(label_list),
+        num_labels=len(label_list)+1,
         init_checkpoint=FLAGS.init_checkpoint,
         learning_rate=FLAGS.learning_rate,
         num_train_steps=num_train_steps,
