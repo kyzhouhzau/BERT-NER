@@ -36,7 +36,7 @@ result:
 ![](/picture.png)
 
 
-#### 注：I am a beginner of tensorflow, I don't know how to optimize the code better, and because I don't know if there is a multi-class evaluation function in tensorflow, I only call tf.metrics.accuracy for evaluation. All results are attached here. I hope to get your help!
+#### 注：The f_score evaluation codes come from:https://github.com/guillaumegenthial/tf_metrics/blob/master/tf_metrics/__init__.py
 
 reference:
 + [https://github.com/google-research/bert](https://github.com/google-research/bert)
