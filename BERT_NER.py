@@ -203,8 +203,9 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
             else:
                 labels.append("X")
     # tokens = tokenizer.tokenize(example.text)
-    if len(tokens) > max_seq_length - 1:
+    if len(tokens) >= max_seq_length - 1:
         tokens = tokens[0:(max_seq_length - 2)]
+        labels = labels[0:(max_seq_length - 2)]
     ntokens = []
     segment_ids = []
     label_ids = []
@@ -225,6 +226,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         input_mask.append(0)
         segment_ids.append(0)
         label_ids.append(0)
+    # print(len(input_ids))
     assert len(input_ids) == max_seq_length
     assert len(input_mask) == max_seq_length
     assert len(segment_ids) == max_seq_length
@@ -253,7 +255,7 @@ def filed_based_convert_examples_to_features(
 ):
     writer = tf.python_io.TFRecordWriter(output_file)
     for (ex_index, example) in enumerate(examples):
-        if ex_index % 10000 == 0:
+        if ex_index % 5000 == 0:
             tf.logging.info("Writing example %d of %d" % (ex_index, len(examples)))
         feature = convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer)
 
@@ -390,11 +392,6 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
 
             def metric_fn(per_example_loss, label_ids, logits):
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
-                
-                # precision = precision_score(label_ids, predictions, average='macro')
-                # recall = recall_score(label_ids, predictions, average='macro')
-                # f_score = f1_score(label_ids, predictions, average='macro')
-                # accuracy = tf.metrics.accuracy(label_ids, predictions)
                 precision = tf_metrics.precision(label_ids,predictions,11,[1,2,4,5,6,7,8,9],average="macro")
                 recall = tf_metrics.recall(label_ids,predictions,11,[1,2,4,5,6,7,8,9],average="macro")
                 f = tf_metrics.f1(label_ids,predictions,11,[1,2,4,5,6,7,8,9],average="macro")
@@ -403,7 +400,6 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                     "eval_precision":precision,
                     "eval_recall":recall,
                     "eval_f": f,
-                    # "F_score":f_score,
                     "eval_loss": loss,
                 }
 
