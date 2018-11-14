@@ -9,10 +9,10 @@ First <code>git clone https://github.com/google-research/bert.git</code>
 Second <code>download file in this project</code>
 
     BERT
-    |____ <strong>bert</strong>
+    |____ bert
     |____ BERT_NER.py
-    |____ <strong>checkpoint</strong>
-    |____ <strong>output</strong>
+    |____ checkpoint
+    |____ output
 
 
 Third run:
