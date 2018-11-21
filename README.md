@@ -19,8 +19,9 @@ Third run:
 ```
   python BERT_NER.py   \
                   --task_name="NER"  \ 
-                  --do_train=true   \
+                  --do_train=True   \
                   --do_eval=True   \
+                  --do_predict=True
                   --data_dir=NERdata   \
                   --vocab_file=checkpoint/vocab.txt  \ 
                   --bert_config_file=checkpoint/bert_config.json \  
@@ -33,6 +34,10 @@ Third run:
  ```       
 
 result:
+
+The predicted result is placed in folder <code>./output/result_dir/</code>. It contain two files, <code>token_test.txt</code> is the tokens and <code>label_test.txt</code> is the labels for each token. If you want a more accurate evaluation result you can use script conlleval.pl for evaluation.
+
+The following evaluation results differ from the evaluation results specified by conll2003. 
 
 ![](/picture2.png)
 
