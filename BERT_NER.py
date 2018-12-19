@@ -475,6 +475,8 @@ def main(_):
             "was only trained up to sequence length %d" %
             (FLAGS.max_seq_length, bert_config.max_position_embeddings))
 
+    tf.gfile.MakeDirs(FLAGS.output_dir)
+
     task_name = FLAGS.task_name.lower()
     if task_name not in processors:
         raise ValueError("Task not found: %s" % (task_name))
@@ -570,7 +572,8 @@ def main(_):
                 writer.write("%s = %s\n" % (key, str(result[key])))
     if FLAGS.do_predict:
         token_path = os.path.join(FLAGS.output_dir, "token_test.txt")
-        with open('./output/label2id.pkl','rb') as rf:
+        # We should use the folder assigned by user
+        with open('%s/label2id.pkl' % FLAGS.output_dir,'rb') as rf:
             label2id = pickle.load(rf)
             id2label = {value:key for key,value in label2id.items()}
         if os.path.exists(token_path):

@@ -1,0 +1,5 @@
+bert/
+model_chinese/
+.vscode/
+__pycache__/
+output/
