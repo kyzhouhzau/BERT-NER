@@ -3,3 +3,5 @@ model_chinese/
 .vscode/
 __pycache__/
 output/
+uncased_L-12_H-768_A-12/
+model_multi_cased/

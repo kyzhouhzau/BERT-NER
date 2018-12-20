@@ -210,7 +210,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
     label_map = {}
     for (i, label) in enumerate(label_list,1):
         label_map[label] = i
-    with open('./output/label2id.pkl','wb') as w:
+    with open('%slabel2id.pkl' % FLAGS.output_dir,'wb') as w:
         pickle.dump(label_map,w)
     textlist = example.text.split(' ')
     labellist = example.label.split(' ')
@@ -573,7 +573,7 @@ def main(_):
     if FLAGS.do_predict:
         token_path = os.path.join(FLAGS.output_dir, "token_test.txt")
         # We should use the folder assigned by user
-        with open('%s/label2id.pkl' % FLAGS.output_dir,'rb') as rf:
+        with open('%slabel2id.pkl' % FLAGS.output_dir,'rb') as rf:
             label2id = pickle.load(rf)
             id2label = {value:key for key,value in label2id.items()}
         if os.path.exists(token_path):

@@ -1,5 +1,5 @@
 @echo off
-SET BERT_BASE_DIR=model_chinese
+SET BERT_BASE_DIR=uncased_L-12_H-768_A-12
 SET DATA_DIR=NERdata/
 SET TASK=ner
 py -3.6 BERT_NER.py ^
