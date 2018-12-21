@@ -11,14 +11,17 @@ from __future__ import print_function
 
 import collections
 import os
+import time
 from bert import modeling
 from bert import optimization
 from bert import tokenization
 import tensorflow as tf
-from sklearn.metrics import f1_score,precision_score,recall_score
-from tensorflow.python.ops import math_ops
 import tf_metrics
 import pickle
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 flags = tf.flags
 
 FLAGS = flags.FLAGS
@@ -98,6 +101,9 @@ flags.DEFINE_integer(
     "num_tpu_cores", 8,
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
+flags.DEFINE_string("column_sep", " ", "The column separator for the corpus")
+
+
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
 
@@ -138,7 +144,7 @@ class DataProcessor(object):
         """Gets a collection of `InputExample`s for the dev set."""
         raise NotImplementedError()
 
-    def get_labels(self):
+    def get_labels(self, data_dir):
         """Gets the list of labels for this data set."""
         raise NotImplementedError()
 
@@ -151,17 +157,20 @@ class DataProcessor(object):
             labels = []
             for line in f:
                 contends = line.strip()
-                word = line.strip().split(' ')[0]
-                label = line.strip().split(' ')[-1]
+                tokens = contends.split(FLAGS.column_sep)
+                if len(tokens) > 2:
+                    word = line.strip().split(FLAGS.column_sep)[0]
+                    label = line.strip().split(FLAGS.column_sep)[-1]
+                else:
+                    if len(contends) == 0:
+                        l = ' '.join([label for label in labels if len(label) > 0])
+                        w = ' '.join([word for word in words if len(word) > 0])
+                        lines.append([l, w])
+                        words = []
+                        labels = []
+                        continue
                 if contends.startswith("-DOCSTART-"):
                     words.append('')
-                    continue
-                if len(contends) == 0 and words[-1] == '.':
-                    l = ' '.join([label for label in labels if len(label) > 0])
-                    w = ' '.join([word for word in words if len(word) > 0])
-                    lines.append([l, w])
-                    words = []
-                    labels = []
                     continue
                 words.append(word)
                 labels.append(label)
@@ -184,8 +193,17 @@ class NerProcessor(DataProcessor):
             self._read_data(os.path.join(data_dir, "test.txt")), "test")
 
 
-    def get_labels(self):
-        return ["B-MISC", "I-MISC", "O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "X","[CLS]","[SEP]"]
+    def get_labels(self, data_dir):
+        train_examples = self._read_data(os.path.join(data_dir, "train.txt"))
+        labels = []
+        for lseq, _ in train_examples:
+            lseq_list = lseq.split(' ')
+            lseq_list = filter(lambda l: len(l) > 0, lseq_list)
+            labels.extend(lseq_list)
+        labels = sorted(list(set(labels)))
+        labels.extend(["X", "[CLS]", "[SEP]"])
+        print("get_labels: {}".format(labels))
+        return labels
 
     def _create_example(self, lines, set_type):
         examples = []
@@ -369,7 +387,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
         output_layer = tf.reshape(output_layer, [-1, hidden_size])
         logits = tf.matmul(output_layer, output_weight, transpose_b=True)
         logits = tf.nn.bias_add(logits, output_bias)
-        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, 13])
+        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, num_labels])
         # mask = tf.cast(input_mask,tf.float32)
         # loss = tf.contrib.seq2seq.sequence_loss(logits,labels,mask)
         # return (loss, logits, predict)
@@ -383,7 +401,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
         return (loss, per_example_loss, logits,predict)
         ##########################################################################
         
-def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
+def model_fn_builder(bert_config, label_list, num_labels, init_checkpoint, learning_rate,
                      num_train_steps, num_warmup_steps, use_tpu,
                      use_one_hot_embeddings):
     def model_fn(features, labels, mode, params):
@@ -434,9 +452,16 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
             def metric_fn(per_example_loss, label_ids, logits):
             # def metric_fn(label_ids, logits):
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
-                precision = tf_metrics.precision(label_ids,predictions,13,[1,2,4,5,6,7,8,9],average="macro")
-                recall = tf_metrics.recall(label_ids,predictions,13,[1,2,4,5,6,7,8,9],average="macro")
-                f = tf_metrics.f1(label_ids,predictions,13,[1,2,4,5,6,7,8,9],average="macro")
+
+                eval_label_ids = []
+                for idx, label in enumerate(label_list, 1):
+                    if ("B-" in label) or ("I-" in label) or ("X" == label):
+                        eval_label_ids.append(idx)
+                print("eval_label_ids: {}".format(eval_label_ids))
+                weight = tf.sequence_mask(FLAGS.max_seq_length)
+                precision = tf_metrics.precision(label_ids, predictions, num_labels, eval_label_ids, weight)
+                recall = tf_metrics.recall(label_ids, predictions, num_labels, eval_label_ids, weight)
+                f = tf_metrics.f1(label_ids, predictions, num_labels, eval_label_ids, weight)
                 #
                 return {
                     "eval_precision":precision,
@@ -480,7 +505,7 @@ def main(_):
         raise ValueError("Task not found: %s" % (task_name))
     processor = processors[task_name]()
 
-    label_list = processor.get_labels()
+    label_list = processor.get_labels(FLAGS.data_dir)
 
     tokenizer = tokenization.FullTokenizer(
         vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
@@ -513,6 +538,7 @@ def main(_):
 
     model_fn = model_fn_builder(
         bert_config=bert_config,
+        label_list=label_list,
         num_labels=len(label_list)+1,
         init_checkpoint=FLAGS.init_checkpoint,
         learning_rate=FLAGS.learning_rate,
@@ -542,7 +568,9 @@ def main(_):
             seq_length=FLAGS.max_seq_length,
             is_training=True,
             drop_remainder=True)
+        print("start train time: {}".format(time.time()))
         estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
+        print("done train time: {}".format(time.time()))
     if FLAGS.do_eval:
         eval_examples = processor.get_dev_examples(FLAGS.data_dir)
         eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
@@ -596,12 +624,22 @@ def main(_):
             is_training=False,
             drop_remainder=predict_drop_remainder)
 
+        predicted_result = estimator.evaluate(input_fn=predict_input_fn)
+        output_eval_file = os.path.join(FLAGS.output_dir, "test_results.txt")
+        with open(output_eval_file,'w') as writer:
+            tf.logging.info("***** Predict results *****")
+            for key in sorted(predicted_result.keys()):
+                tf.logging.info("  %s = %s", key, str(predicted_result[key]))
+                writer.write("%s = %s\n" % (key, str(predicted_result[key])))
+
         result = estimator.predict(input_fn=predict_input_fn)
-        output_predict_file = os.path.join(FLAGS.output_dir, "label_test.txt")
-        with open(output_predict_file,'w') as writer:
+        output_predict_file = os.path.join(FLAGS.output_dir, "predicted_results.txt")
+
+        with open(output_predict_file, 'w') as writer:
             for prediction in result:
-                output_line = "\n".join(id2label[id] for id in prediction if id!=0) + "\n"
+                output_line = "\n".join(id2label[id] for id in prediction if id != 0) + "\n"
                 writer.write(output_line)
+
 
 if __name__ == "__main__":
     flags.mark_flag_as_required("data_dir")

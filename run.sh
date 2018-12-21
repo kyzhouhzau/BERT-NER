@@ -1,0 +1,14 @@
+python3 BERT_NER.py   \
+                  --task_name="NER"  \
+                  --do_train=True   \
+                  --do_eval=True   \
+                  --do_predict=True \
+                  --data_dir=NERdata   \
+                  --vocab_file=uncased_L-24_H-1024_A-16/vocab.txt  \
+                  --bert_config_file=uncased_L-24_H-1024_A-16/bert_config.json \
+                  --init_checkpoint=uncased_L-24_H-1024_A-16/bert_model.ckpt   \
+                  --max_seq_length=32   \
+                  --train_batch_size=16   \
+                  --learning_rate=2e-5   \
+                  --num_train_epochs=3   \
+                  --output_dir=./output/result_dir/
