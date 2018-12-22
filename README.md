@@ -8,6 +8,8 @@ First <code>git clone https://github.com/google-research/bert.git</code>
 
 Second <code>download file in this project</code>
 
+Third download bert snapshot, extract and rename folder checkpoint
+
     BERT
     |____ bert
     |____ BERT_NER.py
