@@ -10,8 +10,8 @@ Second <code>download file in this project</code>
 
     BERT
     |____ bert
+    |____ NERdata
     |____ BERT_NER.py
-    |____ checkpoint
     |____ output
 
 
@@ -37,9 +37,9 @@ Third run:
 
 result:
 
-The predicted result is placed in folder <code>./output/result_dir/</code>. It contain two files, <code>token_test.txt</code> is the tokens and <code>predicted_results.tx</code> is the labels for each token. If you want a more accurate evaluation result you can use script conlleval.pl for evaluation.
+The predicted result is placed in folder <code>./output/result_dir/</code>. It is in the file <code>predicted_results.tx</code>. 
 
-The following evaluation results differ from the evaluation results specified by conll2003. 
+The following evaluation results from script conlleval.pl. 
 
 ![](/picture.png)
 
