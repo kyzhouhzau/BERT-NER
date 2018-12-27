@@ -158,7 +158,7 @@ class DataProcessor(object):
             for line in f:
                 contends = line.strip()
                 tokens = contends.split(FLAGS.column_sep)
-                if len(tokens) > 2:
+                if len(tokens) >= 2:
                     word = line.strip().split(FLAGS.column_sep)[0]
                     label = line.strip().split(FLAGS.column_sep)[-1]
                 else:
@@ -224,6 +224,15 @@ def write_tokens(tokens,mode):
                 wf.write(token+'\n')
         wf.close()
 
+def write_masks(masks,mode):
+    if mode=="test":
+        path = os.path.join(FLAGS.output_dir, "mask_"+mode+".txt")
+        wf = open(path,'a')
+        for mask in masks:
+            if mask!="**NULL**":
+                wf.write(mask+'\n')
+        wf.close()
+
 def convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer,mode):
     label_map = {}
     for (i, label) in enumerate(label_list,1):
@@ -248,9 +257,11 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         tokens = tokens[0:(max_seq_length - 2)]
         labels = labels[0:(max_seq_length - 2)]
     ntokens = []
+    nmasks = []
     segment_ids = []
     label_ids = []
     ntokens.append("[CLS]")
+    nmasks.append("0")
     segment_ids.append(0)
     # append("O") or append("[CLS]") not sure!
     label_ids.append(label_map["[CLS]"])
@@ -258,7 +269,9 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         ntokens.append(token)
         segment_ids.append(0)
         label_ids.append(label_map[labels[i]])
+        nmasks.append("0" if labels[i] == "X" else "1")
     ntokens.append("[SEP]")
+    nmasks.append("1")
     segment_ids.append(0)
     # append("O") or append("[SEP]") not sure!
     label_ids.append(label_map["[SEP]"])
@@ -272,6 +285,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         # we don't concerned about it!
         label_ids.append(0)
         ntokens.append("**NULL**")
+        nmasks.append("**NULL**")
         #label_mask.append(0)
     # print(len(input_ids))
     assert len(input_ids) == max_seq_length
@@ -299,6 +313,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
         #label_mask = label_mask
     )
     write_tokens(ntokens,mode)
+    write_masks(nmasks,mode)
     return feature
 
 

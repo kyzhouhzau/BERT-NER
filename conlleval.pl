@@ -82,7 +82,6 @@ if (@ARGV) { die "conlleval: unexpected command line argument\n"; }
 while (<STDIN>) {
    chomp($line = $_);
    @features = split(/$delimiter/,$line);
-#   @features = split(/\t/,$line);
    if ($nbrOfFeatures < 0) { $nbrOfFeatures = $#features; }
    elsif ($nbrOfFeatures != $#features and @features != 0) {
       printf STDERR "unexpected number of features: %d (%d)\n",
@@ -92,7 +91,6 @@ while (<STDIN>) {
    if (@features == 0 or 
        $features[0] eq $boundary) { @features = ($boundary,"O","O"); }
    if (@features < 2) { 
-      printf STDERR "feature length is %d. \n", @features;
       die "conlleval: unexpected number of features in line $line\n"; 
    }
    if ($raw) {
