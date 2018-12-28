@@ -21,7 +21,7 @@ from bert import modeling
 from bert import optimization
 from bert import tokenization
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1,2,3,4,5,6,7'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 flags = tf.flags
@@ -54,7 +54,7 @@ flags.DEFINE_string(
 )
 
 flags.DEFINE_bool(
-    "do_lower_case", True,
+    "do_lower_case", False,
     "Whether to lower case the input text."
 )
 
@@ -475,20 +475,23 @@ def model_fn_builder(bert_config, label_list, num_labels, init_checkpoint, learn
                 # def metric_fn(label_ids, logits):
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
 
+                eval_labels = []
                 eval_label_ids = []
                 for idx, label in enumerate(label_list, 1):
                     if ("B-" in label) or ("I-" in label):
+                        eval_labels.append(label)
                         eval_label_ids.append(idx)
+                print("eval_labels: {}".format(eval_labels))
                 print("eval_label_ids: {}".format(eval_label_ids))
-                weight = tf.sequence_mask(FLAGS.max_seq_length)
-                precision = tf_metrics.precision(label_ids, predictions, num_labels, eval_label_ids, weight)
-                recall = tf_metrics.recall(label_ids, predictions, num_labels, eval_label_ids, weight)
-                f = tf_metrics.f1(label_ids, predictions, num_labels, eval_label_ids, weight)
+                # weight = tf.sequence_mask(FLAGS.max_seq_length)
+                precision = tf_metrics.precision(label_ids, predictions, num_labels, eval_label_ids)
+                recall = tf_metrics.recall(label_ids, predictions, num_labels, eval_label_ids)
+                f1 = tf_metrics.f1(label_ids, predictions, num_labels, eval_label_ids)
                 #
                 return {
                     "eval_precision": precision,
                     "eval_recall": recall,
-                    "eval_f": f,
+                    "eval_f1": f1,
                     # "eval_loss": loss,
                 }
 

@@ -39,10 +39,15 @@ result:
 
 The predicted result is placed in folder <code>./output/result_dir/</code>. It is in the file <code>predicted_results.tx</code>. 
 
-The following evaluation results from script conlleval.pl. 
+The following evaluation results come from script conlleval.pl. 
 
-![](/picture.png)
-
+ ```  
+accuracy:  98.09%; precision:  90.01%; recall:  91.51%; FB1:  90.76
+              LOC: precision:  91.81%; recall:  93.58%; FB1:  92.69  1698
+             MISC: precision:  75.73%; recall:  81.34%; FB1:  78.43  754
+              ORG: precision:  88.59%; recall:  89.70%; FB1:  89.14  1682
+              PER: precision:  96.62%; recall:  95.67%; FB1:  96.14  1599
+ ```  
 
 #### 注：For the parameters of the above model, I have not made any modifications. All parameters are based on the BERT default parameters. The better parameters for this problem can be adjusted by yourselves.
 
