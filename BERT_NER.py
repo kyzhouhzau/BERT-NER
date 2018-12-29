@@ -21,6 +21,8 @@ from bert import modeling
 from bert import optimization
 from bert import tokenization
 
+from codecs import open
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '1,2,3,4,5,6,7'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -151,7 +153,7 @@ class DataProcessor(object):
     @classmethod
     def _read_data(cls, input_file):
         """Reads a BIO data."""
-        with open(input_file) as f:
+        with open(input_file, encoding="utf-8") as f:
             lines = []
             words = []
             labels = []
@@ -220,7 +222,7 @@ def write_tokens(tokens, nmasks, label_ids, label_map, mode):
         labels = [id_label_map.get(label_id) for label_id in label_ids]
 
         path = os.path.join(FLAGS.output_dir, "token_" + mode + ".txt")
-        wf = open(path, 'a')
+        wf = open(path, 'a', encoding="utf-8")
         for nmask, token, label in zip(nmasks, tokens, labels):
             if token != "**NULL**":
                 wf.write('{} {} {}\n'.format(nmask, token, label))
@@ -618,7 +620,7 @@ def main(_):
             drop_remainder=eval_drop_remainder)
         result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
         output_eval_file = os.path.join(FLAGS.output_dir, "eval_results.txt")
-        with open(output_eval_file, "w") as writer:
+        with open(output_eval_file, "w", encoding="utf-8") as writer:
             tf.logging.info("***** Eval results *****")
             for key in sorted(result.keys()):
                 tf.logging.info("  %s = %s", key, str(result[key]))
@@ -653,7 +655,7 @@ def main(_):
 
         predicted_result = estimator.evaluate(input_fn=predict_input_fn)
         output_eval_file = os.path.join(FLAGS.output_dir, "test_results.txt")
-        with open(output_eval_file, 'w') as writer:
+        with open(output_eval_file, 'w', encoding="utf-8") as writer:
             tf.logging.info("***** Predict results *****")
             for key in sorted(predicted_result.keys()):
                 tf.logging.info("  %s = %s", key, str(predicted_result[key]))
@@ -671,7 +673,7 @@ def main(_):
                 gold_test.append(line.strip())
 
         output_predict_file = os.path.join(FLAGS.output_dir, "predicted_results.txt")
-        with open(output_predict_file, 'w') as writer:
+        with open(output_predict_file, 'w', encoding="utf-8") as writer:
             for gold, guessed in zip(gold_test, guessed_test):
                 nmask, token, label = gold.split(' ')
                 if nmask == "[NEWL]":
