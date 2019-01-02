@@ -1,0 +1,5 @@
+__pycache__
+.vscode
+bert
+model_multi_cased
+uncased_L-12_H-768_A-12
