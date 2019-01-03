@@ -369,7 +369,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
         output_layer = tf.reshape(output_layer, [-1, hidden_size])
         logits = tf.matmul(output_layer, output_weight, transpose_b=True)
         logits = tf.nn.bias_add(logits, output_bias)
-        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, 13])
+        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, num_labels])
         # mask = tf.cast(input_mask,tf.float32)
         # loss = tf.contrib.seq2seq.sequence_loss(logits,labels,mask)
         # return (loss, logits, predict)
@@ -382,7 +382,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
         predict = tf.argmax(probabilities,axis=-1)
         return (loss, per_example_loss, logits,predict)
         ##########################################################################
-        
+
 def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                      num_train_steps, num_warmup_steps, use_tpu,
                      use_one_hot_embeddings):
@@ -430,13 +430,14 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 train_op=train_op,
                 scaffold_fn=scaffold_fn)
         elif mode == tf.estimator.ModeKeys.EVAL:
-            
+
             def metric_fn(per_example_loss, label_ids, logits):
             # def metric_fn(label_ids, logits):
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
-                precision = tf_metrics.precision(label_ids,predictions,13,[1,2,4,5,6,7,8,9],average="macro")
-                recall = tf_metrics.recall(label_ids,predictions,13,[1,2,4,5,6,7,8,9],average="macro")
-                f = tf_metrics.f1(label_ids,predictions,13,[1,2,4,5,6,7,8,9],average="macro")
+                pos_indices = list(range(1,(num_labels-3)))
+                precision = tf_metrics.precision(label_ids,predictions,num_labels, pos_indices, average="macro")
+                recall = tf_metrics.recall(label_ids,predictions,num_labels, pos_indices, average="macro")
+                f = tf_metrics.f1(label_ids,predictions,num_labels, pos_indices, average="macro")
                 #
                 return {
                     "eval_precision":precision,
@@ -581,7 +582,7 @@ def main(_):
         filed_based_convert_examples_to_features(predict_examples, label_list,
                                                 FLAGS.max_seq_length, tokenizer,
                                                 predict_file,mode="test")
-                            
+
         tf.logging.info("***** Running prediction*****")
         tf.logging.info("  Num examples = %d", len(predict_examples))
         tf.logging.info("  Batch size = %d", FLAGS.predict_batch_size)
@@ -602,6 +603,7 @@ def main(_):
             for prediction in result:
                 output_line = "\n".join(id2label[id] for id in prediction if id!=0) + "\n"
                 writer.write(output_line)
+
 
 if __name__ == "__main__":
     flags.mark_flag_as_required("data_dir")
