@@ -1,0 +1,6 @@
+__pycache__
+.vscode
+bert
+model_cased
+model_uncased
+output

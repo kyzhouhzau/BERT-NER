@@ -167,6 +167,74 @@ class DataProcessor(object):
                 labels.append(label)
             return lines
 
+class CgedProcessor(DataProcessor):
+    def get_train_examples(self, data_dir):
+        xfin = open('./CGED/char_level/cbe_train_x.txt', 'r', encoding='utf-8').readlines()
+        yfin = open('./CGED/char_level/cbe_train_y.txt', 'r', encoding='utf-8').readlines()
+        examples = []
+        for i in range(len(xfin)):
+            txt_a = []
+            for t in xfin[i]:
+                txt_a.append(t)
+            txt_a = ' '.join(txt_a).strip()
+
+            label = []
+            for t in yfin[i]:
+                label.append(t)
+            label = ' '.join(label).strip()
+
+            txt_a = tokenization.convert_to_unicode(txt_a)
+            label = tokenization.convert_to_unicode(label)
+            ie = InputExample(guid="TRN%d" % i, text=txt_a, label=label)
+            examples.append(ie)
+        return examples
+
+    def get_dev_examples(self, data_dir):
+        xfin = open('./CGED/char_level/cbe_dev_x.txt', 'r', encoding='utf-8').readlines()
+        yfin = open('./CGED/char_level/cbe_dev_y.txt', 'r', encoding='utf-8').readlines()
+        examples = []
+        for i in range(len(xfin)):
+            txt_a = list()
+            for t in xfin[i]:
+                txt_a.append(t)
+            txt_a = ' '.join(txt_a).strip()
+
+            label = []
+            for t in yfin[i]:
+                label.append(t)
+            label = ' '.join(label).strip()
+
+            txt_a = tokenization.convert_to_unicode(txt_a)
+            label = tokenization.convert_to_unicode(label)
+            ie = InputExample(guid="DEV%d" % i, text=txt_a, label=label)
+            examples.append(ie)
+        return examples
+
+    def get_test_examples(self, data_dir):
+        xfin = open('./CGED/char_level/cbe_test.txt', 'r', encoding='utf-8').readlines()
+        examples = []
+        for i in range(len(xfin)):
+            txt_a = list()
+            for t in xfin[i]:
+                txt_a.append(t)
+            txt_a = ' '.join(txt_a).strip()
+
+            ie = InputExample(guid="TST%d" % i, text=txt_a)
+            examples.append(ie)
+        return examples
+
+
+    def get_labels(self):
+        return ["O", "R", "W", "S", "M", "[CLS]", "[SEP]", "end"]
+
+    def _create_example(self, lines, set_type):
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "%s-%s" % (set_type, i)
+            text = tokenization.convert_to_unicode(line[1])
+            label = tokenization.convert_to_unicode(line[0])
+            examples.append(InputExample(guid=guid, text=text, label=label))
+        return examples
 
 class NerProcessor(DataProcessor):
     def get_train_examples(self, data_dir):
@@ -193,6 +261,7 @@ class NerProcessor(DataProcessor):
             guid = "%s-%s" % (set_type, i)
             text = tokenization.convert_to_unicode(line[1])
             label = tokenization.convert_to_unicode(line[0])
+            print(text, label)
             examples.append(InputExample(guid=guid, text=text, label=label))
         return examples
 
@@ -210,7 +279,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
     label_map = {}
     for (i, label) in enumerate(label_list,1):
         label_map[label] = i
-    with open('./output/label2id.pkl','wb') as w:
+    with open('%slabel2id.pkl' % FLAGS.output_dir,'wb') as w:
         pickle.dump(label_map,w)
     textlist = example.text.split(' ')
     labellist = example.label.split(' ')
@@ -462,7 +531,8 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
 def main(_):
     tf.logging.set_verbosity(tf.logging.INFO)
     processors = {
-        "ner": NerProcessor
+        "ner": NerProcessor,
+        "cged": CgedProcessor,
     }
     if not FLAGS.do_train and not FLAGS.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
@@ -474,6 +544,8 @@ def main(_):
             "Cannot use sequence length %d because the BERT model "
             "was only trained up to sequence length %d" %
             (FLAGS.max_seq_length, bert_config.max_position_embeddings))
+
+    tf.gfile.MakeDirs(FLAGS.output_dir)
 
     task_name = FLAGS.task_name.lower()
     if task_name not in processors:
@@ -542,7 +614,9 @@ def main(_):
             seq_length=FLAGS.max_seq_length,
             is_training=True,
             drop_remainder=True)
+        print('OAO', train_input_fn, num_train_steps)
         estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
+
     if FLAGS.do_eval:
         eval_examples = processor.get_dev_examples(FLAGS.data_dir)
         eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
@@ -552,6 +626,7 @@ def main(_):
         tf.logging.info("***** Running evaluation *****")
         tf.logging.info("  Num examples = %d", len(eval_examples))
         tf.logging.info("  Batch size = %d", FLAGS.eval_batch_size)
+
         eval_steps = None
         if FLAGS.use_tpu:
             eval_steps = int(len(eval_examples) / FLAGS.eval_batch_size)
@@ -568,9 +643,11 @@ def main(_):
             for key in sorted(result.keys()):
                 tf.logging.info("  %s = %s", key, str(result[key]))
                 writer.write("%s = %s\n" % (key, str(result[key])))
+
     if FLAGS.do_predict:
         token_path = os.path.join(FLAGS.output_dir, "token_test.txt")
-        with open('./output/label2id.pkl','rb') as rf:
+        # We should use the folder assigned by user
+        with open('%slabel2id.pkl' % FLAGS.output_dir,'rb') as rf:
             label2id = pickle.load(rf)
             id2label = {value:key for key,value in label2id.items()}
         if os.path.exists(token_path):
