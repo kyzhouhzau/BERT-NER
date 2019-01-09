@@ -173,6 +173,7 @@ class CgedProcessor(DataProcessor):
         with open(os.path.join(data_dir, '%s.txt' % data_type), 'r', encoding='UTF-8') as fin:
             for i, line in enumerate(fin):
                 x, y = line.strip().split('\t')
+                if len(x) > 64: continue
                 text = ' '.join([c for c in x]).strip()
                 label = ' '.join([c for c in y]).strip()
                 text = tokenization.convert_to_unicode(text)
