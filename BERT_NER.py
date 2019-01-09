@@ -188,7 +188,7 @@ class CgedProcessor(DataProcessor):
         return self._get_examples(data_dir, 'dev')
 
     def get_test_examples(self, data_dir):
-        return self._get_examples(data_dir, 'text')
+        return self._get_examples(data_dir, 'test')
 
 
     def get_labels(self):
