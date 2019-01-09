@@ -14,7 +14,7 @@ for dirPath, _, fileList in os.walk('./CGED'):
 					maxline = line
 		print(maxlen, fileName, maxline, end='')
 
-n = 16384
+n = 2752
 
 for i in range(1, n):
 	if n % i == 0: print('%5d x %5d' % (i, int(n/i)))
