@@ -1,17 +1,18 @@
 import os
 
-# for dirPath, _, fileList in os.walk('./CGED'):
-# 	for fileName in fileList:
-# 		fullName = os.path.join(dirPath, fileName)
-# 		maxlen = 0
-# 		maxline = ''
-# 		with open(fullName, 'r', encoding='UTF-8') as finn:
-# 			for line in finn:
-# 				if len(line.strip()) > maxlen:
-# 					# print(len(line.strip()), line, end='')
-# 					maxlen = len(line.strip())
-# 					maxline = line
-# 		print(maxlen, fileName, maxline, end='')
+for dirPath, _, fileList in os.walk('./CGED'):
+	for fileName in fileList:
+		if 'cbe' in fileName: continue
+		fullName = os.path.join(dirPath, fileName)
+		maxlen = 0
+		maxline = ''
+		with open(fullName, 'r', encoding='UTF-8') as finn:
+			for line in finn:
+				if len(line.strip()) > maxlen:
+					# print(len(line.strip()), line, end='')
+					maxlen = len(line.strip())
+					maxline = line
+		print(maxlen, fileName, maxline, end='')
 
 n = 16384
 
