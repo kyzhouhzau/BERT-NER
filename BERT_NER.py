@@ -177,7 +177,7 @@ class CgedProcessor(DataProcessor):
                 label = ' '.join([c for c in y]).strip()
                 text = tokenization.convert_to_unicode(text)
                 label = tokenization.convert_to_unicode(label)
-                examples.append(guid='%s%d' % (data_type, i), text=text, label=label)
+                examples.append(InputExample(guid='%s%d' % (data_type, i), text=text, label=label))
         return examples
 
     def get_train_examples(self, data_dir):
