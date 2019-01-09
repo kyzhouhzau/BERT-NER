@@ -3,7 +3,7 @@
 """
 Copyright 2018 The Google AI Language Team Authors.
 BASED ON Google_BERT.
-@Author:zhoukaiyin
+@Author: zhoukaiyin
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -168,64 +168,30 @@ class DataProcessor(object):
             return lines
 
 class CgedProcessor(DataProcessor):
-    def get_train_examples(self, data_dir):
-        xfin = open('./CGED/char_level/cbe_train_x.txt', 'r', encoding='utf-8').readlines()
-        yfin = open('./CGED/char_level/cbe_train_y.txt', 'r', encoding='utf-8').readlines()
-        examples = []
-        for i in range(len(xfin)):
-            txt_a = []
-            for t in xfin[i]:
-                txt_a.append(t)
-            txt_a = ' '.join(txt_a).strip()
-
-            label = []
-            for t in yfin[i]:
-                label.append(t)
-            label = ' '.join(label).strip()
-
-            txt_a = tokenization.convert_to_unicode(txt_a)
-            label = tokenization.convert_to_unicode(label)
-            ie = InputExample(guid="TRN%d" % i, text=txt_a, label=label)
-            examples.append(ie)
+    def _get_examples(self, data_dir, data_type):
+        examples = list()
+        with open(os.path.join(data_dir, '%s.txt' % data_type), 'r', encoding='UTF-8') as fin:
+            for i, line in enumerate(fin):
+                x, y = line.strip().split('\t')
+                text = ' '.join([c for c in x]).strip()
+                label = ' '.join([c for c in y]).strip()
+                text = tokenization.convert_to_unicode(text)
+                label = tokenization.convert_to_unicode(label)
+                examples.append(guid='%s%d' % (data_type, i), text=text, label=label)
         return examples
+
+    def get_train_examples(self, data_dir):
+        return self._get_examples(data_dir, 'train')
 
     def get_dev_examples(self, data_dir):
-        xfin = open('./CGED/char_level/cbe_dev_x.txt', 'r', encoding='utf-8').readlines()
-        yfin = open('./CGED/char_level/cbe_dev_y.txt', 'r', encoding='utf-8').readlines()
-        examples = []
-        for i in range(len(xfin)):
-            txt_a = list()
-            for t in xfin[i]:
-                txt_a.append(t)
-            txt_a = ' '.join(txt_a).strip()
-
-            label = []
-            for t in yfin[i]:
-                label.append(t)
-            label = ' '.join(label).strip()
-
-            txt_a = tokenization.convert_to_unicode(txt_a)
-            label = tokenization.convert_to_unicode(label)
-            ie = InputExample(guid="DEV%d" % i, text=txt_a, label=label)
-            examples.append(ie)
-        return examples
+        return self._get_examples(data_dir, 'dev')
 
     def get_test_examples(self, data_dir):
-        xfin = open('./CGED/char_level/cbe_test.txt', 'r', encoding='utf-8').readlines()
-        examples = []
-        for i in range(len(xfin)):
-            txt_a = list()
-            for t in xfin[i]:
-                txt_a.append(t)
-            txt_a = ' '.join(txt_a).strip()
-
-            ie = InputExample(guid="TST%d" % i, text=txt_a)
-            examples.append(ie)
-        return examples
+        return self._get_examples(data_dir, 'text')
 
 
     def get_labels(self):
-        return ["O", "R", "W", "S", "M", "[CLS]", "[SEP]", "end"]
+        return ["O", "R", "W", "S", "M", "[CLS]", "[SEP]"]
 
     def _create_example(self, lines, set_type):
         examples = []

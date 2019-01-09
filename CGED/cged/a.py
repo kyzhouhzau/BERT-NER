@@ -10,7 +10,7 @@ with open('./CGED_Identification.txt', 'r', encoding='UTF-8') as fin:
 		if line == '\n': continue
 		try:
 			a, b = line.strip().split('\t')
-			if a == 'end':
+			if a == 'end' or a == '，' or a == '。' or a == '！':
 				xout.write(s1 + '\n')
 				yout.write(s2 + '\n')
 				aout.write('%s\t%s\n' % (s1, s2))
