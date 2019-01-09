@@ -11,9 +11,10 @@ with open('./CGED_Identification.txt', 'r', encoding='UTF-8') as fin:
 		try:
 			a, b = line.strip().split('\t')
 			if a == 'end' or a == '，' or a == '。' or a == '！':
-				xout.write(s1 + '\n')
-				yout.write(s2 + '\n')
-				aout.write('%s\t%s\n' % (s1, s2))
+				if s1.strip() != '':
+					xout.write(s1 + '\n')
+					yout.write(s2 + '\n')
+					aout.write('%s\t%s\n' % (s1, s2))
 				if len(s1) != len(s2):
 					print(len(s1), len(s2))
 					print(i, s1, s2)
