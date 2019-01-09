@@ -1,0 +1,80 @@
+
+== cat /etc/issue ===============================================
+Linux PenutDesktop 4.15.0-43-generic #46-Ubuntu SMP Thu Dec 6 14:45:28 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+VERSION="18.04.1 LTS (Bionic Beaver)"
+VERSION_ID="18.04"
+VERSION_CODENAME=bionic
+
+== are we in docker =============================================
+No
+
+== compiler =====================================================
+c++ (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0
+Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+== uname -a =====================================================
+Linux PenutDesktop 4.15.0-43-generic #46-Ubuntu SMP Thu Dec 6 14:45:28 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+
+== check pips ===================================================
+
+== check for virtualenv =========================================
+False
+
+== tensorflow import ============================================
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ImportError: No module named tensorflow
+
+== env ==========================================================
+LD_LIBRARY_PATH is unset
+DYLD_LIBRARY_PATH is unset
+
+== nvidia-smi ===================================================
+./env.sh: line 105: nvidia-smi: command not found
+
+== cuda libs  ===================================================
+/usr/local/cuda-9.0/targets/x86_64-linux/lib/libcudart.so.9.0.176
+/usr/local/cuda-9.0/targets/x86_64-linux/lib/libcudart_static.a
+/usr/local/MATLAB/R2018b/bin/glnxa64/libcudart.so.9.1.85
+
+== cat /etc/issue ===============================================
+Linux PenutDesktop 4.15.0-43-generic #46-Ubuntu SMP Thu Dec 6 14:45:28 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+VERSION="18.04.1 LTS (Bionic Beaver)"
+VERSION_ID="18.04"
+VERSION_CODENAME=bionic
+
+== are we in docker =============================================
+No
+
+== compiler =====================================================
+c++ (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0
+Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+== uname -a =====================================================
+Linux PenutDesktop 4.15.0-43-generic #46-Ubuntu SMP Thu Dec 6 14:45:28 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+
+== check pips ===================================================
+
+== check for virtualenv =========================================
+False
+
+== tensorflow import ============================================
+/usr/bin/python3: Relink `/lib/x86_64-linux-gnu/libudev.so.1' with `/lib/x86_64-linux-gnu/librt.so.1' for IFUNC symbol `clock_gettime'
+
+== env ==========================================================
+LD_LIBRARY_PATH is unset
+DYLD_LIBRARY_PATH is unset
+
+== nvidia-smi ===================================================
+./env.sh: line 105: nvidia-smi: command not found
+
+== cuda libs  ===================================================
+/usr/local/cuda-9.0/targets/x86_64-linux/lib/libcudart.so.9.0.176
+/usr/local/cuda-9.0/targets/x86_64-linux/lib/libcudart_static.a
+/usr/local/MATLAB/R2018b/bin/glnxa64/libcudart.so.9.1.85
