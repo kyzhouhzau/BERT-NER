@@ -3,9 +3,9 @@ python3 BERT_NER.py   \
                   --do_train=True   \
                   --do_eval=True   \
                   --do_predict=True \
-                  --data_dir=NERdata   \
+                  --data_dir=NERdata/en   \
                   --column_sep=" " \
-                  --vocab_file=.multi_cased_L-12_H-768_A-12/vocab.txt  \
+                  --vocab_file=multi_cased_L-12_H-768_A-12/vocab.txt  \
                   --bert_config_file=multi_cased_L-12_H-768_A-12/bert_config.json \
                   --init_checkpoint=multi_cased_L-12_H-768_A-12/bert_model.ckpt   \
                   --max_seq_length=128   \
