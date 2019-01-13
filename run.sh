@@ -1,0 +1,16 @@
+python3 BERT_NER.py   \
+                  --task_name="NER"  \
+                  --do_train=True   \
+                  --do_eval=True   \
+                  --do_predict=True \
+                  --data_dir=NERdata/en   \
+                  --column_sep=" " \
+                  --vocab_file=multi_cased_L-12_H-768_A-12/vocab.txt  \
+                  --bert_config_file=multi_cased_L-12_H-768_A-12/bert_config.json \
+                  --init_checkpoint=multi_cased_L-12_H-768_A-12/bert_model.ckpt   \
+                  --max_seq_length=128   \
+                  --train_batch_size=32   \
+                  --learning_rate=2e-5   \
+                  --num_train_epochs=6   \
+                  --save_checkpoints_steps=1000  \
+                  --output_dir=./output_en/result_dir/
