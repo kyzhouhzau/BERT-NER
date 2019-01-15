@@ -393,7 +393,7 @@ def create_model(bert_config, is_training, input_ids, input_mask,
         output_layer = tf.reshape(output_layer, [-1, hidden_size])
         logits = tf.matmul(output_layer, output_weight, transpose_b=True)
         logits = tf.nn.bias_add(logits, output_bias)
-        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, 8])
+        logits = tf.reshape(logits, [-1, FLAGS.max_seq_length, num_labels])
         # mask = tf.cast(input_mask,tf.float32)
         # loss = tf.contrib.seq2seq.sequence_loss(logits,labels,mask)
         # return (loss, logits, predict)
@@ -455,12 +455,12 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 scaffold_fn=scaffold_fn)
         elif mode == tf.estimator.ModeKeys.EVAL:
             def metric_fn(per_example_loss, label_ids, logits):
-                total_labels = 8
-                pos_idx = [2, 3, 4, 5]
+                pos_idx = list(range(1,(num_labels-3)))
+                avg = "marco"
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
-                precision = tf_metrics.precision(label_ids, predictions, total_labels, pos_idx, average="macro")
-                recall = tf_metrics.recall(label_ids, predictions, total_labels, pos_idx, average="macro")
-                f = tf_metrics.f1(label_ids, predictions, total_labels, pos_idx, average="macro")
+                precision = tf_metrics.precision(label_ids, predictions, num_labels, pos_idx, average=avg)
+                recall = tf_metrics.recall(label_ids, predictions, num_labels, pos_idx, average=avg)
+                f = tf_metrics.f1(label_ids, predictions, num_labels, pos_idx, average=avg)
                 return {
                     "eval_precision": precision,
                     "eval_recall": recall,
