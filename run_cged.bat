@@ -4,7 +4,7 @@ SET DATA_DIR=CGED/
 SET TASK=cged
 py -3.6 BERT_NER.py ^
   --task_name=%TASK% ^
-  --do_train=false ^
+  --do_train=true ^
   --do_eval=true ^
   --do_predict=true ^
   --data_dir=%DATA_DIR% ^
