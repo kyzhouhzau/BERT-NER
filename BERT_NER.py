@@ -15,7 +15,7 @@ from bert import modeling
 from bert import optimization
 from bert import tokenization
 import tensorflow as tf
-from sklearn.metrics import f1_score,precision_score,recall_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 from tensorflow.python.ops import math_ops
 import tf_metrics
 import pickle
@@ -189,7 +189,6 @@ class CgedProcessor(DataProcessor):
 
     def get_test_examples(self, data_dir):
         return self._get_examples(data_dir, 'test')
-
 
     def get_labels(self):
         return ["O", "R", "W", "S", "M", "[CLS]", "[SEP]"]
@@ -455,20 +454,19 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 train_op=train_op,
                 scaffold_fn=scaffold_fn)
         elif mode == tf.estimator.ModeKeys.EVAL:
-            
             def metric_fn(per_example_loss, label_ids, logits):
-            # def metric_fn(label_ids, logits):
+                total_labels = 8
+                pos_idx = [2, 3, 4, 5]
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
-                precision = tf_metrics.precision(label_ids, predictions, 8, [2,3,4,5], average="macro")
-                recall = tf_metrics.recall(label_ids, predictions, 8, [2,3,4,5], average="macro")
-                f = tf_metrics.f1(label_ids, predictions, 8, [2,3,4,5], average="macro")
+                precision = tf_metrics.precision(label_ids, predictions, total_labels, pos_idx, average="macro")
+                recall = tf_metrics.recall(label_ids, predictions, total_labels, pos_idx, average="macro")
+                f = tf_metrics.f1(label_ids, predictions, total_labels, pos_idx, average="macro")
                 return {
                     "eval_precision": precision,
                     "eval_recall": recall,
                     "eval_f": f,
                 }
             eval_metrics = (metric_fn, [per_example_loss, label_ids, logits])
-            # eval_metrics = (metric_fn, [label_ids, logits])
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
                 mode=mode,
                 loss=total_loss,
@@ -487,7 +485,7 @@ def main(_):
         "ner": NerProcessor,
         "cged": CgedProcessor,
     }
-    
+
     if not FLAGS.do_train and not FLAGS.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
 
