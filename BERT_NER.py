@@ -173,7 +173,7 @@ class CgedProcessor(DataProcessor):
         with open(os.path.join(data_dir, '%s.txt' % data_type), 'r', encoding='UTF-8') as fin:
             for i, line in enumerate(fin):
                 x, y = line.strip().split('\t')
-                if len(x) >= 64: continue
+                # if len(x) >= 64: continue
                 text = ' '.join([c for c in x]).strip()
                 label = ' '.join([c for c in y]).strip()
                 text = tokenization.convert_to_unicode(text)
@@ -193,15 +193,6 @@ class CgedProcessor(DataProcessor):
 
     def get_labels(self):
         return ["O", "R", "W", "S", "M", "[CLS]", "[SEP]"]
-
-    def _create_example(self, lines, set_type):
-        examples = []
-        for (i, line) in enumerate(lines):
-            guid = "%s-%s" % (set_type, i)
-            text = tokenization.convert_to_unicode(line[1])
-            label = tokenization.convert_to_unicode(line[0])
-            examples.append(InputExample(guid=guid, text=text, label=label))
-        return examples
 
 class NerProcessor(DataProcessor):
     def get_train_examples(self, data_dir):
@@ -320,9 +311,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
     return feature
 
 
-def filed_based_convert_examples_to_features(
-        examples, label_list, max_seq_length, tokenizer, output_file,mode=None
-):
+def filed_based_convert_examples_to_features(examples, label_list, max_seq_length, tokenizer, output_file,mode=None):
     writer = tf.python_io.TFRecordWriter(output_file)
     for (ex_index, example) in enumerate(examples):
         if ex_index % 5000 == 0:
@@ -338,7 +327,7 @@ def filed_based_convert_examples_to_features(
         features["input_mask"] = create_int_feature(feature.input_mask)
         features["segment_ids"] = create_int_feature(feature.segment_ids)
         features["label_ids"] = create_int_feature(feature.label_ids)
-        #features["label_mask"] = create_int_feature(feature.label_mask)
+        # features["label_mask"] = create_int_feature(feature.label_mask)
         tf_example = tf.train.Example(features=tf.train.Features(feature=features))
         writer.write(tf_example.SerializeToString())
 
@@ -350,7 +339,7 @@ def file_based_input_fn_builder(input_file, seq_length, is_training, drop_remain
         "segment_ids": tf.FixedLenFeature([seq_length], tf.int64),
         "label_ids": tf.FixedLenFeature([seq_length], tf.int64),
         # "label_ids":tf.VarLenFeature(tf.int64),
-        #"label_mask": tf.FixedLenFeature([seq_length], tf.int64),
+        # "label_mask": tf.FixedLenFeature([seq_length], tf.int64),
     }
 
     def _decode_record(record, name_to_features):
@@ -470,15 +459,13 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
             def metric_fn(per_example_loss, label_ids, logits):
             # def metric_fn(label_ids, logits):
                 predictions = tf.argmax(logits, axis=-1, output_type=tf.int32)
-                precision = tf_metrics.precision(label_ids,predictions,8,[2,3,4,5],average="micro")
-                recall = tf_metrics.recall(label_ids,predictions,8,[2,3,4,5],average="micro")
-                f = tf_metrics.f1(label_ids,predictions,8,[2,3,4,5],average="micro")
-                #
+                precision = tf_metrics.precision(label_ids, predictions, 8, [2,3,4,5], average="macro")
+                recall = tf_metrics.recall(label_ids, predictions, 8, [2,3,4,5], average="macro")
+                f = tf_metrics.f1(label_ids, predictions, 8, [2,3,4,5], average="macro")
                 return {
-                    "eval_precision":precision,
-                    "eval_recall":recall,
+                    "eval_precision": precision,
+                    "eval_recall": recall,
                     "eval_f": f,
-                    #"eval_loss": loss,
                 }
             eval_metrics = (metric_fn, [per_example_loss, label_ids, logits])
             # eval_metrics = (metric_fn, [label_ids, logits])
@@ -489,8 +476,7 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 scaffold_fn=scaffold_fn)
         else:
             output_spec = tf.contrib.tpu.TPUEstimatorSpec(
-                mode = mode,predictions= predicts,scaffold_fn=scaffold_fn
-            )
+                mode=mode, predictions=predicts, scaffold_fn=scaffold_fn)
         return output_spec
     return model_fn
 
@@ -501,6 +487,7 @@ def main(_):
         "ner": NerProcessor,
         "cged": CgedProcessor,
     }
+    
     if not FLAGS.do_train and not FLAGS.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
 
