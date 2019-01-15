@@ -4,3 +4,5 @@ bert
 model_cased
 model_uncased
 output
+*.pyc
+output

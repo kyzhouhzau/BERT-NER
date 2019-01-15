@@ -19,8 +19,8 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 from tensorflow.python.ops import math_ops
 import tf_metrics
 import pickle
-flags = tf.flags
 
+flags = tf.flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
