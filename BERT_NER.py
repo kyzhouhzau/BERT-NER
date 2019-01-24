@@ -205,8 +205,8 @@ class CgedProcessor(DataProcessor):
                 # if len(x) >= 64: continue
                 text = ' '.join([c for c in x]).strip()
                 label = ' '.join([c for c in y]).strip()
-                text = tokenization.convert_to_unicode(text)
-                label = tokenization.convert_to_unicode(label)
+                # text = tokenization.convert_to_unicode(text)
+                # label = tokenization.convert_to_unicode(label)
                 examples.append(InputExample(guid='%s%d' % (data_type, i), text=text, label=label))
         return examples
 
