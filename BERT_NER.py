@@ -167,6 +167,33 @@ class DataProcessor(object):
                 labels.append(label)
             return lines
 
+class IndecentProcessor(DataProcessor):
+    def _get_examples(self, data_dir, data_type):
+        examples = list()
+        with open(os.path.join(data_dir, '%s.txt' % data_type), 'r', encoding='UTF-8') as fin:
+            for i, line in enumerate(fin):
+                x, y = line.strip().split('\t')
+                # if len(x) >= 64: continue
+                text = x.strip()
+                label = y.strip()
+                text = tokenization.convert_to_unicode(text)
+                label = tokenization.convert_to_unicode(label)
+                examples.append(InputExample(guid='%s%d' % (data_type, i), text=text, label=label))
+        return examples
+
+    def get_train_examples(self, data_dir):
+        return self._get_examples(data_dir, 'train')
+
+    def get_dev_examples(self, data_dir):
+        return self._get_examples(data_dir, 'dev')
+
+    def get_test_examples(self, data_dir):
+        return self._get_examples(data_dir, 'test')
+
+    def get_labels(self):
+        return ["O", "D", "[CLS]", "[SEP]"]
+
+
 class CgedProcessor(DataProcessor):
     def _get_examples(self, data_dir, data_type):
         examples = list()
@@ -484,6 +511,7 @@ def main(_):
     processors = {
         "ner": NerProcessor,
         "cged": CgedProcessor,
+        "Indecent": IndecentProcessor,
     }
 
     if not FLAGS.do_train and not FLAGS.do_eval:
