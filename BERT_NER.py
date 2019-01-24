@@ -178,8 +178,8 @@ class IndecentProcessor(DataProcessor):
                 label = y.strip()
                 if 'X' in label:
                     print(i, label)
-                text = tokenization.convert_to_unicode(text)
-                label = tokenization.convert_to_unicode(label)
+                # text = tokenization.convert_to_unicode(text)
+                # label = tokenization.convert_to_unicode(label)
                 examples.append(InputExample(guid='%s%d' % (data_type, i), text=text, label=label))
         return examples
 
