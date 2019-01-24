@@ -511,7 +511,7 @@ def main(_):
     processors = {
         "ner": NerProcessor,
         "cged": CgedProcessor,
-        "Indecent": IndecentProcessor,
+        "indecent": IndecentProcessor,
     }
 
     if not FLAGS.do_train and not FLAGS.do_eval:
