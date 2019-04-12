@@ -1,4 +1,4 @@
-#BERT-NER Version 2
+# BERT-NER Version 2
 
 
 Use Google's BERT for named entity recognition （CoNLL-2003 as the dataset）. 
@@ -70,6 +70,7 @@ As Google's paper says a 0.2% error is reasonable(reported 92.4%).
 ### reference:
 
 [1] https://arxiv.org/abs/1810.04805
+
 [2] https://github.com/google-research/bert
 
 
