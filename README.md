@@ -58,11 +58,11 @@ perl conlleval.pl -d '\t' < ./output/result_dir/label_test.txt
 * crf=False
   
 ```
-accuracy:  98.03%; precision:  90.23%; recall:  88.03%; FB1:  89.12
-              LOC: precision:  92.43%; recall:  90.79%; FB1:  91.60  1387
-             MISC: precision:  82.34%; recall:  76.71%; FB1:  79.42  668
-              ORG: precision:  87.07%; recall:  84.10%; FB1:  85.56  1191
-              PER: precision:  94.81%; recall:  94.96%; FB1:  94.89  1311
+accuracy:  98.07%; precision:  90.65%; recall:  88.29%; FB1:  89.45
+              LOC: precision:  92.50%; recall:  91.71%; FB1:  92.10  1387
+             MISC: precision:  82.63%; recall:  76.99%; FB1:  79.71  668
+              ORG: precision:  88.75%; recall:  84.22%; FB1:  86.43  1191
+              PER: precision:  94.51%; recall:  94.72%; FB1:  94.62  1311
 ```
 ### Result description:
 As Google's paper says a 0.2% error is reasonable(reported 92.4%).
