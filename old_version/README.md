@@ -41,7 +41,7 @@ The predicted result is placed in folder <code>./output/result_dir/</code>. It c
 
 The following evaluation results differ from the evaluation results specified by conll2003. 
 
-![](/picture2.png)
+![](/old_version/picture2.png)
 
 
 #### 注：For the parameters of the above model, I have not made any modifications. All parameters are based on the BERT default parameters. The better parameters for this problem can be adjusted by yourselves.
