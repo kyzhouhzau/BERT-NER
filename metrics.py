@@ -1,7 +1,7 @@
 #! usr/bin/env python3
 # -*- coding:utf-8 -*-
 """
-# Copyright 2016 
+# Copyright 2016 Google
 # Copyright 2019 The BioNLP-HZAU Kaiyin Zhou
 # Time:2019/04/08
 """
