@@ -65,7 +65,7 @@ accuracy:  98.07%; precision:  90.65%; recall:  88.29%; FB1:  89.45
               PER: precision:  94.51%; recall:  94.72%; FB1:  94.62  1311
 ```
 ### Result description:
-Here just use the default paramaters, but as Google's paper says a 0.2% error is reasonable(reported 92.4%).
+Here i just use the default paramaters, but as Google's paper says a 0.2% error is reasonable(reported 92.4%).
 Maybe some tricks need to be added to the above model.
 
 ### reference:
