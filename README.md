@@ -66,7 +66,8 @@ accuracy:  98.07%; precision:  90.65%; recall:  88.29%; FB1:  89.45
 ```
 ### Result description:
 As Google's paper says a 0.2% error is reasonable(reported 92.4%).
-Maybe some improvements need to be added to the above model.
+
+Maybe some tricks need to be added to the above model.
 
 ### reference:
 
