@@ -100,10 +100,11 @@ def streaming_confusion_matrix(labels, predictions, num_classes, weights=None):
     return (total_cm, update_op)
 
 
-def calculate(total_cm, num_class):
+def calculate(total_cm, num_class, label_wise=False):
     precisions = []
     recalls = []
     fs = []
+    supports = []
     for i in range(num_class):
         rowsum, colsum = np.sum(total_cm[i]), np.sum(total_cm[r][i] for r in range(num_class))
         precision = total_cm[i][i] / float(colsum+1e-12)
@@ -112,4 +113,8 @@ def calculate(total_cm, num_class):
         precisions.append(precision)
         recalls.append(recall)
         fs.append(f)
-    return np.mean(precisions), np.mean(recalls), np.mean(fs)
+        supports.append(rowsum)
+    if label_wise:
+        return np.array(precisions), np.array(recalls), np.array(fs), np.array(supports)
+    else: 
+        return np.mean(precisions), np.mean(recalls), np.mean(fs)
