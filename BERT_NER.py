@@ -531,7 +531,7 @@ def _write_base(batch_tokens,id2label,prediction,batch_labels,wf,i):
         #
         if predict=="X" and not predict.startswith("##"):
             predict="O"
-        line = "{}\t{}\t{}\n".format(token,predict,true_l)
+        line = "{}\t{}\t{}\n".format(token,true_l,predict)
         wf.write(line)
 
 def Writer(output_predict_file,result,batch_tokens,batch_labels,id2label):
