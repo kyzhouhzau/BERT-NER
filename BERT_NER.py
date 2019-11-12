@@ -120,7 +120,7 @@ flags.DEFINE_integer(
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
 flags.DEFINE_string("middle_output", "middle_data", "Dir was used to store middle data!")
-flags.DEFINE_string("crf", "True", "use crf!")
+flags.DEFINE_bool("crf", True, "use crf!")
 
 class InputExample(object):
   """A single training/test example for simple sequence classification."""
