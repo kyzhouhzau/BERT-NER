@@ -236,11 +236,11 @@ class NerProcessor(DataProcessor):
         return examples
 
 
-def convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer, mode):
+def convert_single_example(ex_index, example, label_map, max_seq_length, tokenizer, mode):
     """
     :param ex_index: example num
     :param example:
-    :param label_list: all labels
+    :param label_map: dict map from label to id for all labels
     :param max_seq_length:
     :param tokenizer: WordPiece tokenization
     :param mode:
@@ -251,12 +251,6 @@ def convert_single_example(ex_index, example, label_list, max_seq_length, tokeni
     labels: [I-PER,I-PER,X,O,O,O,X]
 
     """
-    label_map = {}
-    #here start with zero this means that "[PAD]" is zero
-    for (i,label) in enumerate(label_list):
-        label_map[label] = i
-    with open(FLAGS.middle_output+"/label2id.pkl",'wb') as w:
-        pickle.dump(label_map,w)
     textlist = example.text.split(' ')
     labellist = example.label.split(' ')
     tokens = []
@@ -322,10 +316,16 @@ def filed_based_convert_examples_to_features(examples, label_list, max_seq_lengt
     writer = tf.python_io.TFRecordWriter(output_file)
     batch_tokens = []
     batch_labels = []
+    label_map = {}
+    #here start with zero this means that "[PAD]" is zero
+    for (i,label) in enumerate(label_list):
+        label_map[label] = i
+    with open(FLAGS.middle_output+"/label2id.pkl",'wb') as w:
+        pickle.dump(label_map,w)
     for (ex_index, example) in enumerate(examples):
         if ex_index % 5000 == 0:
             logging.info("Writing example %d of %d" % (ex_index, len(examples)))
-        feature,ntokens,label_ids = convert_single_example(ex_index, example, label_list, max_seq_length, tokenizer, mode)
+        feature,ntokens,label_ids = convert_single_example(ex_index, example, label_map, max_seq_length, tokenizer, mode)
         batch_tokens.extend(ntokens)
         batch_labels.extend(label_ids)
         def create_int_feature(values):
