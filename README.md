@@ -1,8 +1,9 @@
+Another better option for named entity recognition task is to think of BERT as a layer of tensorflow2.0, see [fennlp](https://github.com/kyzhouhzau/fennlp) for more details.
+
 # BERT-NER Version 2
 
 
 Use Google's BERT for named entity recognition （CoNLL-2003 as the dataset）. 
-
 
 The original version （see old_version for more detail） contains some hard codes and lacks corresponding annotations,which is inconvenient to understand. So in this updated version,there are some new ideas and tricks （On data Preprocessing and layer design） that can help you quickly implement the fine-tuning model (you just need to try to modify crf_layer or softmax_layer).
 
@@ -66,7 +67,9 @@ accuracy:  98.15%; precision:  90.61%; recall:  88.85%; FB1:  89.72
 ```
 ### Result description:
 Here i just use the default paramaters, but as Google's paper says a 0.2% error is reasonable(reported 92.4%).
-Maybe some tricks need to be added to the above model.
+Maybe some tricks need to be added to the above model. 
+
+
 
 ### reference:
 
