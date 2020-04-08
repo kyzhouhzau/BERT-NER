@@ -1,4 +1,4 @@
-Another better option for named entity recognition task is to think of BERT as a layer of tensorflow2.0, see [fennlp](https://github.com/kyzhouhzau/fennlp) for more details.
+## For better performance, you can try fennlp, see [fennlp](https://github.com/kyzhouhzau/fennlp) for more details.
 
 # BERT-NER Version 2
 
