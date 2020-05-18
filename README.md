@@ -1,4 +1,4 @@
-## For better performance, you can try fennlp, see [fennlp](https://github.com/kyzhouhzau/fennlp) for more details.
+## For better performance, you can try NLPGNN, see [NLPGNN](https://github.com/kyzhouhzau/NLPGNN) for more details.
 
 # BERT-NER Version 2
 
