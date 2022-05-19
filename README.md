@@ -15,7 +15,7 @@ BERT-NER
 |____ data		            # train data
 |____ middle_data	            # middle data (label id map)
 |____ output			    # output (final model, predict results)
-|____ BERT_NER.py		    # mian code
+|____ BERT_NER.py		    # main code
 |____ conlleval.pl		    # eval code
 |____ run_ner.sh    		    # run model and eval result
 
